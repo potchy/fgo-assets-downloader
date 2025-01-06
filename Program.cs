@@ -73,9 +73,16 @@ async Task Download(Url resourceUrl, string downloadDirectory, string fileName =
 
     string temporaryFilePath = filePath + ".tmp";
     using (Stream fileStream = File.Create(temporaryFilePath))
-    using (Stream downloadStream = await httpClient.GetStreamAsync(resourceUrl))
     {
-        await downloadStream.CopyToAsync(fileStream);
+        try
+        {
+            using Stream downloadStream = await httpClient.GetStreamAsync(resourceUrl);
+            await downloadStream.CopyToAsync(fileStream);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     File.Move(temporaryFilePath, filePath);
